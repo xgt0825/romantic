@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💖 给最特别的你</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* ===== 星空粒子 ===== */
+  .stars { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+  .star {
+    position: absolute;
+    width: 3px; height: 3px;
+    background: #fff;
+    border-radius: 50%;
+    animation: twinkle var(--dur) ease-in-out infinite alternate;
+  }
+  @keyframes twinkle {
+    0%   { opacity: 0.2; transform: scale(0.8); }
+    100% { opacity: 1;   transform: scale(1.2); }
+  }
+
+  /* ===== 飘落花瓣 ===== */
+  .petals-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+  .petal {
+    position: absolute;
+    top: -40px;
+    width: 20px; height: 20px;
+    background: radial-gradient(circle at 30% 30%, #ffb7c5, #ff6b8a);
+    border-radius: 50% 0 50% 0;
+    opacity: 0.7;
+    animation: fall var(--fall-dur) linear infinite;
+    animation-delay: var(--delay);
+  }
+  @keyframes fall {
+    0%   { transform: translateY(-40px) rotate(0deg) scale(0.8); opacity: 0; }
+    10%  { opacity: 0.8; }
+    90%  { opacity: 0.6; }
+    100% { transform: translateY(105vh) rotate(720deg) scale(1.1); opacity: 0; }
+  }
+
+  /* ===== 主卡片 ===== */
+  .card {
+    position: relative; z-index: 10;
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 32px;
+    padding: 48px 56px 56px;
+    max-width: 600px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+
+  /* ===== 跳动的心 ===== */
+  .heart-wrap {
+    display: inline-block;
+    cursor: pointer;
+    animation: heartbeat 1.4s ease-in-out infinite;
+    margin-bottom: 8px;
+  }
+  .heart-wrap svg {
+    width: 90px; height: 90px;
+    filter: drop-shadow(0 0 30px rgba(255,80,120,0.6));
+  }
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    14%      { transform: scale(1.18); }
+    28%      { transform: scale(1); }
+    42%      { transform: scale(1.12); }
+    56%      { transform: scale(1); }
+  }
+
+  /* ===== 文字 ===== */
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fbc2eb);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 12px 0 8px;
+    letter-spacing: 2px;
+  }
+  .sub {
+    color: rgba(255,255,255,0.6);
+    font-size: 15px;
+    letter-spacing: 4px;
+    margin-bottom: 20px;
+  }
+  .poem {
+    color: rgba(255,255,255,0.82);
+    font-size: 16px;
+    line-height: 2;
+    margin: 18px 0 28px;
+    white-space: pre-line;
+  }
+  .poem span {
+    display: inline-block;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards;
+  }
+  .poem span:nth-child(1) { animation-delay: 0.2s; }
+  .poem span:nth-child(2) { animation-delay: 0.5s; }
+  .poem span:nth-child(3) { animation-delay: 0.8s; }
+  .poem span:nth-child(4) { animation-delay: 1.1s; }
+  .poem span:nth-child(5) { animation-delay: 1.4s; }
+  @keyframes fadeUp {
+    0%   { opacity: 0; transform: translateY(16px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== 按钮 ===== */
+  .btn {
+    display: inline-block;
+    padding: 14px 44px;
+    border: none;
+    border-radius: 50px;
+    font-size: 17px;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+    box-shadow: 0 8px 28px rgba(245,87,108,0.4);
+    transition: all 0.3s ease;
+    letter-spacing: 2px;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 12px 36px rgba(245,87,108,0.55);
+  }
+  .btn:active { transform: scale(0.97); }
+
+  /* ===== 彩花（点击按钮后） ===== */
+  .confetti-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; }
+  .confetti-piece {
+    position: absolute;
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    animation: confettiFall var(--cf-dur) ease-out forwards;
+  }
+  @keyframes confettiFall {
+    0%   { opacity: 1; transform: translateY(0) rotate(0deg) scale(1); }
+    100% { opacity: 0; transform: translateY(100vh) rotate(720deg) scale(0.3); }
+  }
+
+  /* ===== 打字光标 ===== */
+  .cursor-blink { animation: blink 0.8s step-end infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* ===== 响应式 ===== */
+  @media (max-width: 480px) {
+    .card { padding: 32px 20px 36px; }
+    h1 { font-size: 22px; }
+    .poem { font-size: 14px; }
+    .heart-wrap svg { width: 70px; height: 70px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 星空 -->
+<div class="stars" id="stars"></div>
+
+<!-- 花瓣 -->
+<div class="petals-container" id="petals"></div>
+
+<!-- 彩花容器 -->
+<div class="confetti-container" id="confetti"></div>
+
+<!-- 主卡片 -->
+<div class="card">
+  <div class="heart-wrap" id="heartBtn" title="点击有惊喜 💕">
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="heartGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#ff758c"/>
+          <stop offset="50%" stop-color="#ff7eb3"/>
+          <stop offset="100%" stop-color="#f5576c"/>
+        </linearGradient>
+      </defs>
+      <path d="M50,90 C15,60 0,40 0,25 C0,10 15,0 30,0 C40,0 48,6 50,14 C52,6 60,0 70,0 C85,0 100,10 100,25 C100,40 85,60 50,90Z"
+            fill="url(#heartGrad)"/>
+    </svg>
+  </div>
+
+  <h1>✨ 给最特别的你 ✨</h1>
+  <div class="sub">— 有些话，只想悄悄对你说 —</div>
+
+  <div class="poem" id="poem">
+    <span>🌷 仝子墨</span>
+    <span>🌙 你在干嘛</span>
+    <span>🌸 想你了</span>
+    <span>💌 过来让我亲一口</span>
+    <span>❤️ Mua～💋</span>
+  </div>
+
+  <button class="btn" id="surpriseBtn">💖 点一下，有惊喜 💖</button>
+</div>
+
+<script>
+// ===== 1. 生成星空 =====
+(function initStars() {
+  const container = document.getElementById('stars');
+  const count = 180;
+  for (let i = 0; i < count; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    star.style.left   = Math.random() * 100 + '%';
+    star.style.top    = Math.random() * 100 + '%';
+    star.style.setProperty('--dur', (2 + Math.random() * 4) + 's');
+    const size = 1.5 + Math.random() * 3;
+    star.style.width  = size + 'px';
+    star.style.height = size + 'px';
+    star.style.animationDelay = Math.random() * 5 + 's';
+    container.appendChild(star);
+  }
+})();
+
+// ===== 2. 生成飘落花瓣 =====
+(function initPetals() {
+  const container = document.getElementById('petals');
+  const count = 25;
+  for (let i = 0; i < count; i++) {
+    const petal = document.createElement('div');
+    petal.className = 'petal';
+    petal.style.left = Math.random() * 100 + '%';
+    petal.style.setProperty('--fall-dur', (8 + Math.random() * 10) + 's');
+    petal.style.setProperty('--delay', Math.random() * 15 + 's');
+    const s = 14 + Math.random() * 12;
+    petal.style.width  = s + 'px';
+    petal.style.height = s + 'px';
+    container.appendChild(petal);
+  }
+})();
+
+// ===== 3. 心形点击反弹效果 =====
+document.getElementById('heartBtn').addEventListener('click', function() {
+  this.style.animation = 'none';
+  void this.offsetHeight; // 强制回流
+  this.style.animation = 'heartbeat 1.4s ease-in-out infinite';
+  launchMiniConfetti(30);
+});
+
+// ===== 4. 惊喜按钮 =====
+document.getElementById('surpriseBtn').addEventListener('click', function() {
+  // 按钮文字变化
+  const texts = ['💕 我也喜欢你 💕', '🌹 你真好 🌹', '🌟 你最棒 🌟', '💖 永远在一起 💖'];
+  const idx = Math.floor(Math.random() * texts.length);
+  this.textContent = texts[idx];
+
+  // 放大量彩花
+  launchConfetti(120);
+
+  // 心加速跳一下
+  const hw = document.querySelector('.heart-wrap');
+  hw.style.animation = 'none';
+  void hw.offsetHeight;
+  hw.style.animation = 'heartbeat 0.6s ease-in-out 3';
+
+  // 诗出现闪烁星星效果
+  document.querySelectorAll('.poem span').forEach((el, i) => {
+    el.style.transition = 'all 0.3s ease';
+    el.style.transform = 'scale(1.1)';
+    el.style.color = '#fbc2eb';
+    setTimeout(() => {
+      el.style.transform = 'scale(1)';
+      el.style.color = '';
+    }, 400 + i * 100);
+  });
+});
+
+// ===== 5. 彩花系统 =====
+function launchConfetti(count) {
+  const container = document.getElementById('confetti');
+  const colors = ['#ff6b6b','#f093fb','#f5576c','#ffb7c5','#ffd93d','#6bcb77','#4d96ff','#ff9a9e','#a18cd1','#fad0c4'];
+  for (let i = 0; i < count; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left   = 10 + Math.random() * 80 + '%';
+    piece.style.top    = -10 + Math.random() * 20 + '%';
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    const size = 6 + Math.random() * 10;
+    piece.style.width  = size + 'px';
+    piece.style.height = size * (0.6 + Math.random() * 0.8) + 'px';
+    piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    piece.style.setProperty('--cf-dur', (2 + Math.random() * 3) + 's');
+    piece.style.animationDelay = Math.random() * 1.2 + 's';
+    container.appendChild(piece);
+    setTimeout(() => piece.remove(), 5000);
+  }
+}
+
+function launchMiniConfetti(count) {
+  const container = document.getElementById('confetti');
+  const colors = ['#ff758c','#ffb7c5','#fbc2eb','#ffd93d','#fff'];
+  for (let i = 0; i < count; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left   = 35 + Math.random() * 30 + '%';
+    piece.style.top    = 20 + Math.random() * 30 + '%';
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    const size = 4 + Math.random() * 6;
+    piece.style.width  = size + 'px';
+    piece.style.height = size + 'px';
+    piece.style.borderRadius = '50%';
+    piece.style.setProperty('--cf-dur', (1.5 + Math.random() * 2) + 's');
+    piece.style.animationDelay = Math.random() * 0.5 + 's';
+    container.appendChild(piece);
+    setTimeout(() => piece.remove(), 4000);
+  }
+}
+
+// ===== 6. 控制台彩蛋 =====
+console.log('%c💖 送给最特别的你 💖', 'font-size:24px; color:#f5576c;');
+console.log('%c世界那么大，遇见你真好。', 'font-size:16px; color:#fbc2eb;');
+</script>
+</body>
+</html>
